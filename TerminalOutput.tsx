@@ -1,7 +1,37 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Terminal, Code, Activity, Image as ImageIcon } from 'lucide-react';
-import { RunResponse } from '../types';
+import { RunResponse } from './types';
+
+const sanitizeCode = (code: string): string => {
+  if (typeof DOMParser === 'undefined') return '';
+
+  const blockedTags = ['script', 'style', 'iframe', 'object', 'embed', 'link', 'meta'];
+  const doc = new DOMParser().parseFromString(code, 'text/html');
+
+  blockedTags.forEach((tag) => {
+    doc.querySelectorAll(tag).forEach((element) => element.remove());
+  });
+
+  Array.from(doc.body.getElementsByTagName('*')).forEach((element) => {
+    Array.from(element.attributes).forEach((attr) => {
+      const name = attr.name.toLowerCase();
+      const value = attr.value.trim();
+
+      if (name.startsWith('on') || name === 'style') {
+        element.removeAttribute(attr.name);
+        return;
+      }
+
+      const isUriAttr = ['src', 'href', 'xlink:href'].includes(name);
+      if (isUriAttr && value.toLowerCase().startsWith('javascript:')) {
+        element.removeAttribute(attr.name);
+      }
+    });
+  });
+
+  return doc.body.innerHTML;
+};
 
 interface TerminalOutputProps {
   status: 'idle' | 'loading' | 'success' | 'error';
@@ -10,7 +40,12 @@ interface TerminalOutputProps {
 }
 
 const TerminalOutput: React.FC<TerminalOutputProps> = ({ status, result, logs }) => {
-  const isSvg = result?.code.trim().startsWith('<svg');
+  const sanitizedCode = useMemo(
+    () => (result?.code ? sanitizeCode(result.code) : ''),
+    [result?.code]
+  );
+
+  const isSvg = sanitizedCode.trim().startsWith('<svg');
 
   return (
     <div className="h-full flex flex-col bg-slate-950 rounded-lg border border-slate-800 overflow-hidden shadow-2xl relative">
@@ -103,9 +138,9 @@ const TerminalOutput: React.FC<TerminalOutputProps> = ({ status, result, logs })
                       <ImageIcon className="w-3 h-3" />
                       <span>VISUAL_PREVIEW</span>
                    </div>
-                   <div 
+                   <div
                       className="p-4 bg-white rounded shadow-lg"
-                      dangerouslySetInnerHTML={{ __html: result.code }}
+                      dangerouslySetInnerHTML={{ __html: sanitizedCode }}
                    />
                 </div>
               )}
