@@ -1,7 +1,8 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Terminal, Code, Activity, Image as ImageIcon } from 'lucide-react';
-import { RunResponse } from '../types';
+import { RunResponse } from './types';
+import { sanitizeCode } from './utils/sanitizeCode';
 
 interface TerminalOutputProps {
   status: 'idle' | 'loading' | 'success' | 'error';
@@ -10,7 +11,12 @@ interface TerminalOutputProps {
 }
 
 const TerminalOutput: React.FC<TerminalOutputProps> = ({ status, result, logs }) => {
-  const isSvg = result?.code.trim().startsWith('<svg');
+  const sanitizedCode = useMemo(
+    () => (result?.code ? sanitizeCode(result.code) : ''),
+    [result?.code]
+  );
+
+  const isSvg = sanitizedCode.trim().startsWith('<svg');
 
   return (
     <div className="h-full flex flex-col bg-slate-950 rounded-lg border border-slate-800 overflow-hidden shadow-2xl relative">
@@ -103,9 +109,9 @@ const TerminalOutput: React.FC<TerminalOutputProps> = ({ status, result, logs })
                       <ImageIcon className="w-3 h-3" />
                       <span>VISUAL_PREVIEW</span>
                    </div>
-                   <div 
+                   <div
                       className="p-4 bg-white rounded shadow-lg"
-                      dangerouslySetInnerHTML={{ __html: result.code }}
+                      dangerouslySetInnerHTML={{ __html: sanitizedCode }}
                    />
                 </div>
               )}
