@@ -2,36 +2,7 @@ import React, { useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Terminal, Code, Activity, Image as ImageIcon } from 'lucide-react';
 import { RunResponse } from '../types';
-
-const sanitizeCode = (code: string): string => {
-  if (typeof DOMParser === 'undefined') return '';
-
-  const blockedTags = ['script', 'style', 'iframe', 'object', 'embed', 'link', 'meta'];
-  const doc = new DOMParser().parseFromString(code, 'text/html');
-
-  blockedTags.forEach((tag) => {
-    doc.querySelectorAll(tag).forEach((element) => element.remove());
-  });
-
-  Array.from(doc.body.getElementsByTagName('*')).forEach((element) => {
-    Array.from(element.attributes).forEach((attr) => {
-      const name = attr.name.toLowerCase();
-      const value = attr.value.trim();
-
-      if (name.startsWith('on') || name === 'style') {
-        element.removeAttribute(attr.name);
-        return;
-      }
-
-      const isUriAttr = ['src', 'href', 'xlink:href'].includes(name);
-      if (isUriAttr && value.toLowerCase().startsWith('javascript:')) {
-        element.removeAttribute(attr.name);
-      }
-    });
-  });
-
-  return doc.body.innerHTML;
-};
+import { sanitizeCode } from '../utils/sanitizeCode';
 
 interface TerminalOutputProps {
   status: 'idle' | 'loading' | 'success' | 'error';
