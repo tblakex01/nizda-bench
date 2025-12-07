@@ -1,0 +1,5 @@
+{
+  "name": "Nizda Bench",
+  "description": "A futuristic Cyberpunk-style LLM evaluation platform for benchmarking reasoning, coding, and visual generation tasks.",
+  "requestFramePermissions": []
+}
