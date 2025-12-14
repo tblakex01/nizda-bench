@@ -57,7 +57,7 @@ Follow these steps to get the application running locally on your machine.
    ```
 
 3. **Configure Environment Variables**
-   Create a `.env` file in the root directory and add your Google Gemini API key to allow the real AI features to work:
+   Create a `.env` file in the root directory (or copy `.env.example`) and add your Google Gemini API key to allow the real AI features to work:
 
    ```env
    VITE_API_KEY=your_gemini_api_key_here

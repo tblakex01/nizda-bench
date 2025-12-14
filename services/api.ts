@@ -19,7 +19,7 @@ export const runBenchmark = async (
   // Real Gemini API Integration
   if (request.model_name === ModelOption.GEMINI_3_0_PRO) {
     try {
-      const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+      const ai = new GoogleGenAI({ apiKey: import.meta.env.VITE_API_KEY });
 
       const response = await ai.models.generateContent({
         model: "gemini-3-pro-preview",
