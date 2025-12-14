@@ -15,12 +15,12 @@ export interface RunResponse {
   model: string;
   task: string;
   code: string;
-  status: 'Success' | 'Error';
+  status: "Success" | "Error";
 }
 
 export enum ModelOption {
   DEEPSEEK_V3_2 = "DeepSeek V3.2",
   MISTRAL_LARGE_3 = "Mistral Large 3",
   GPT_4O = "GPT-4o",
-  GEMINI_3_0_PRO = "Gemini 3.0 Pro"
+  GEMINI_3_0_PRO = "Gemini 3.0 Pro",
 }
